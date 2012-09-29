@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">anotherTest</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">anotherTest</string>
+    <string name="item1">Small Pizza</string>
+    <string name="item2">Medium Pizza</string>
+    <string name="item3">Large Pizza</string>
+    
+</resources>
