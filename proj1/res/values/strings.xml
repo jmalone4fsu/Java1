@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name">Java1-proj1</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Java1-proj1</string>
+    <string-array name="items">
+        <item>Small Pizza</item>
+        <item>Medium Pizza</item>
+        <item>Large Pizza</item>
+    </string-array>
+    
+</resources>
