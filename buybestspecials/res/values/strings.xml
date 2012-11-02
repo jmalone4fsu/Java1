@@ -1,0 +1,28 @@
+<resources>
+
+    <string name="app_name">Buy Best Specials</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">BuyBest</string>
+    
+    <string name="macbook_sku">6936592</string>
+    <string name="macbook_name">Apple MacBook Pro</string>
+    <string name="macbook_desc">Retina Display-8GB Memory-128GB Flash Storage</string>
+    <string name="macbook_price">$1,699.99</string>
+    
+    <string name="iphone_sku">3825057</string>
+    <string name="iphone_name">Apple iPhone 4</string>
+    <string name="iphone_desc">iPhone 4 with 8GB Memory-White(Sprint)</string>
+    <string name="iphone_price">$  599.99</string>
+    
+    <string name="macpro_sku">487446</string>
+    <string name="macpro_name">Apple MacPro</string>
+    <string name="macpro_desc">MacPro Quad Core Intel Xeon-6GB Memory-1TB Hard Drive</string>
+    <string name="macpro_price">$2,499.99</string>
+    
+    <string name="imac_sku">4983015</string>
+    <string name="imac_name">Apple iMac</string>
+    <string name="imac_desc">iMac 21.5 inch-8GB Memory-1TB Hard Drive</string>
+    <string name="imac_price">$1,899.99</string>
+
+</resources>
