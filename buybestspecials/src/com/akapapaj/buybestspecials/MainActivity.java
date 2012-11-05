@@ -7,7 +7,9 @@ import java.util.Arrays;
 
 import com.akapapaj.mylib.FormStuff;
 import com.akapapaj.mylib.Product;
+import com.akapapaj.mylib.SomeProduct;
 import com.akapapaj.mylib.SpecialDays;
+import com.akapapaj.mylib.Laptops;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -114,7 +116,16 @@ public class MainActivity extends Activity {
         		}
         	}
         });
-        
+        // **************************************************************
+        // *Showing how to use the Interface but doing nothing with it  *
+        // **************************************************************
+        // SomeProducts is my Interface file.. and Laptops is the class that implements it
+        ArrayList<SomeProduct> product = new ArrayList<SomeProduct>();
+        product.add(new Laptops("Samdung iClone", "Like a MacBook but cheaply made", 999.99, 43235));
+        product.add(new Laptops("MacBook Pro", "First in class and show", 1820.99, 42239));
+        product.add(new Laptops("MacBook Air", "Lightest and brightest", 1439.99, 41938));
+        // spit out a message letting me know that the products were added
+        Log.i("Message: ", "Added 3 new products to SomeProduct Interface");
         
         // setup Linear Layout from FormStuff
 
@@ -151,6 +162,7 @@ public class MainActivity extends Activity {
         }
         
     }
+   
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
