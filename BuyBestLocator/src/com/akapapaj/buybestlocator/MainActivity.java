@@ -19,10 +19,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -51,6 +53,7 @@ public class MainActivity extends Activity {
 	String stringPrice;
 	double doublePrice;
 	HashMap<String, String> _history;
+	ImageView image;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,13 @@ public class MainActivity extends Activity {
         //ADD PRODUCT DISPLAY
         _product = new ProductDisplay(_context);
         
+        //add imageView
+        ImageView imageView = new ImageView(MainActivity.this);
+        imageView.setId(R.id.image_id);
+        imageView.setImageResource(R.drawable.buybestsave);
+        LayoutParams imageViewLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        imageView.setLayoutParams(imageViewLayoutParams);
+       
         //ADD FAVORITES DISPLAY
         ArrayList<String> favorites = new ArrayList<String>(Arrays.<String>asList(FileStuff.readStringFile(_context, "favorites", true).split(",")));
         _favorites = new Favorites(_context, favorites);
@@ -149,6 +159,7 @@ public class MainActivity extends Activity {
         //ADD VIEWS TO MAIN LAYOUT
         _appLayout.addView(_search);
         _appLayout.addView(_product);
+        _appLayout.addView(imageView);
         _appLayout.addView(_favorites);
         
         _appLayout.setOrientation(LinearLayout.VERTICAL);
