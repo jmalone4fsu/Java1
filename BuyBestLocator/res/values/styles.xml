@@ -1,5 +1,7 @@
 <resources>
-
-    <style name="AppTheme" parent="android:Theme.Light" />
+    <style name="YellowBold" parent="@android:style/TextAppearance">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#FFFF00</item>
+    </style>
 
 </resources>

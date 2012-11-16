@@ -31,7 +31,7 @@ public class WebStuff {
 			if(ni.isConnected()){
 				_connectionType = ni.getTypeName();
 				_conn = true;
-			}
+			} 
 		}
 	}
 	

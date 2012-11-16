@@ -3,6 +3,8 @@ package com.akapapaj.buybestlocator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.json.JSONArray;
@@ -17,6 +19,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -50,7 +55,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        setTheme(android.R.style.Theme_Holo);
         _context = this;
         _appLayout = new LinearLayout(this);
         _history = getHistory();
@@ -65,25 +70,82 @@ public class MainActivity extends Activity {
         searchButton.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				Log.i("Click Handler",_search.getField().getText().toString());
-				getAvailable(_search.getField().getText().toString());
+			public void onClick(View v) {
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(_search._searchButton.getWindowToken(), 0);
+				_connected = WebStuff.getConnectionStatus(_context);
+				if(_connected){
+					getAvailable(_search.getField().getText().toString());
+					
+				} else {
+					Toast toast2 = Toast.makeText(_context, "No Network Connection", Toast.LENGTH_SHORT);
+					toast2.show();
+				}
+				
 			}
         	
         });
         
-        // DETECT NETWORK CONNECTION
-        _connected = WebStuff.getConnectionStatus(_context);
-        if(_connected){
-        	Log.i("NETWORK CONNECTION", WebStuff.getConnectionType(_context));
-        }
+        
         //ADD PRODUCT DISPLAY
         _product = new ProductDisplay(_context);
         
         //ADD FAVORITES DISPLAY
-        _favorites = new Favorites(_context);
-        
+        ArrayList<String> favorites = new ArrayList<String>(Arrays.<String>asList(FileStuff.readStringFile(_context, "favorites", true).split(",")));
+        _favorites = new Favorites(_context, favorites);
+        _favorites._list.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View v,
+					int pos, long id) {
+				if(pos > 0){
+					String theSku = parent.getItemAtPosition(pos).toString();
+					_search.getField().setText(theSku);
+					getAvailable(theSku);
+				}
+				
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				Log.i("FAVORITE SELECTED", "NONE");
+				
+			}
+        	
+        });
+        _favorites._add.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				String _sku = _product._current;
+				if(_sku.length()>0){
+					Boolean found = false;
+					int foundpos = 0;
+					for(int i=1, j=_favorites._products.size(); i<j; i++){
+						if(_favorites._products.get(i).compareTo(_sku)==0){
+							found = true;
+							foundpos= i;
+							break;
+						}
+					}
+					if(!found){
+						_favorites._products.add(_sku);
+						Toast myalert = Toast.makeText(_context, "Favorite Added", Toast.LENGTH_LONG);
+						myalert.show();
+						storeFavorites(_sku);
+						_favorites._list.setSelection(_favorites._products.size()-1);
+						
+					}else {
+						_favorites._list.setSelection(foundpos);
+					}
+				} else {
+					Toast myalert = Toast.makeText(_context, "Sku not found", Toast.LENGTH_LONG);
+					myalert.show();
+				}
+				
+			}
+        	
+        });
         //ADD VIEWS TO MAIN LAYOUT
         _appLayout.addView(_search);
         _appLayout.addView(_product);
@@ -100,9 +162,26 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
-    
+    private void storeFavorites(String item){
+    	StringBuilder sb = new StringBuilder();
+    	for(int i=1, j=_favorites._products.size(); i<j; i++){
+    		sb.append(_favorites._products.get(i));
+    		sb.append(",");
+    	}
+    	String productString = sb.toString().substring(0, sb.toString().length()-1);
+    	Boolean stored = FileStuff.storeStringFile(_context, "favorites", productString, true);
+    	Toast myAlert;
+    	if(stored){
+    		myAlert = Toast.makeText(_context, "Added to Favorites", Toast.LENGTH_LONG);
+    		myAlert.show();
+    	}else {
+    		myAlert = Toast.makeText(_context, "Favorites NOT Updated", Toast.LENGTH_LONG);
+    		myAlert.show();
+    	}
+    }
     @SuppressWarnings("unused")
 	private void getAvailable(String name){
+    	
     	String apikey = "q5hfdc2etg6qsjyzsd4huba5";
     	String baseURL = "http://api.remix.bestbuy.com/v1/products(sku="+name+")?show=sku,name,shortDescription,salePrice&apiKey=q5hfdc2etg6qsjyzsd4huba5&format=json";
     	String qs;
@@ -158,6 +237,7 @@ public class MainActivity extends Activity {
     			System.out.println("******JARRAY********"+jArray.length());
     			for(int i=0;i<jArray.length();i++) {
     				JSONObject json_data = jArray.getJSONObject(i);
+    				
     				_history.put("name", json_data.getString("name"));
     				_history.put("saleprice", String.valueOf(json_data.getDouble("salePrice")));
     				_history.put("sku", String.valueOf(json_data.getInt("sku")));
@@ -165,11 +245,13 @@ public class MainActivity extends Activity {
     				_history.put("location", "Best Buy Johnson City TN 37601");
     				FileStuff.storeObjectFile(_context, "history", _history, false);
     				FileStuff.storeStringFile(_context, "temp", json_data.toString(), true);
+    				
     				Log.i("log_tag", "Name: "+json_data.getString("name")+ "\n" +
     						"Sale Price: "+json_data.getDouble("salePrice")+ "\n" +
     						"Sku: "+json_data.getInt("sku")+ "\n" +
     						"Desc: "+json_data.getString("shortDescription"));
     				_product._sku.setText(""+String.valueOf(json_data.getInt("sku")));
+    				_product._current= (""+String.valueOf(json_data.getInt("sku")));
     				_product._name.setText(json_data.getString("name"));
     				_product._desc.setText(json_data.getString("shortDescription"));
     				_product._price.setText("$"+String.valueOf(json_data.getDouble("salePrice")));
